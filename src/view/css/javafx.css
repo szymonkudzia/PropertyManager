@@ -1,0 +1,16 @@
+.menu-bar {
+    -fx-background-color: linear-gradient(to top, #0f0f0f 0%,#686868 100%);
+    -fx-font-size: 20px;
+}
+
+.menu .label {
+    -fx-text-fill: #ffffff;
+}
+
+.menu-item .label {
+    -fx-text-fill: #000000;
+}
+
+.menu-item:focused .label, .menu-item:hover .label {
+    -fx-text-fill: #ffffff;
+}

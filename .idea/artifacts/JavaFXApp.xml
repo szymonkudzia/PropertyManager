@@ -1,9 +1,17 @@
 <component name="ArtifactManager">
-  <artifact type="javafx" name="JavaFXApp">
+  <artifact type="javafx" build-on-make="true" name="JavaFXApp">
     <output-path>$PROJECT_DIR$/out/artifacts/JavaFXApp</output-path>
     <properties id="javafx-properties">
       <options>
-        <option name="appClass" value="sample.Main" />
+        <option name="appClass" value="com.sk.property_manager.Main" />
+        <option name="description" value="" />
+        <option name="height" value="600" />
+        <option name="htmlParamFile" value="" />
+        <option name="nativeBundle" value="deb" />
+        <option name="paramFile" value="" />
+        <option name="title" value="Property Manager" />
+        <option name="vendor" value="" />
+        <option name="width" value="800" />
       </options>
     </properties>
     <root id="root">
