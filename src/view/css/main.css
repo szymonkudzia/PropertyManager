@@ -1,0 +1,56 @@
+.description {
+    color: #3d3d3d;
+    font-style: italic;
+}
+.property {
+    color: #76451e;
+    font-weight: bold;
+}
+
+.property > span {
+    color: #697c6f;
+}
+
+body {
+    font-size: 20px;
+}
+
+
+.row {
+    padding: 10px;
+}
+
+.footer {
+    position: fixed;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    padding: 20px;
+    z-index: 1000;
+    background: linear-gradient(to top, #B0B0B0 0%,#EAEAEA 100%);;
+}
+
+.footer > .btn {
+    font-size: 20px;
+    margin-left: 10px;
+}
+
+.panel-heading td:nth-child(3), .panel-heading td:nth-child(4),
+.panel-heading td:nth-child(3) button, .panel-heading td:nth-child(4) button {
+    width: 40px;
+}
+
+input {
+    font-size: 20px;
+}
+
+.panel:last-child {
+    margin-bottom: 100px;
+}
+
+.panel.modified {
+    border-color: #FFD189;
+}
+.panel.modified .panel-heading{
+    background-color: #FFD189;
+}

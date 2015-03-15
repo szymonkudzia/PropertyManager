@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Property Manager</title>
+
+    <!-- Bootstrap -->
+    <link href="./css/bootstrap.css" rel="stylesheet">
+
+    <link href="./css/main.css" rel="stylesheet">
+
+</head>
+<body>
+
+<div class="container-fluid">
+    <div id="template" class="panel panel-default" style="display: none">
+        <!-- Default panel contents -->
+        <div class="panel-heading">
+            <table style="width: 100%">
+                <tr>
+                    <td>
+                        <div class="property">some.property<span> =</span></div>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control value">
+                    </td>
+                    <td>
+                        <button class="btn btn-default col-xs-1 col-md-1 default" title="Default value"><span class="glyphicon glyphicon-certificate"></span></button>
+                    </td>
+                    <td>
+                        <button class="btn btn-default col-xs-1 col-md-1 revert" title="Undo changes"><span class="glyphicon glyphicon-repeat"></span></button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="panel-body">
+            <p class="description">Some description</p>
+        </div>
+    </div>
+
+
+
+    <div class="footer">
+        <button class="btn btn-primary pull-right">Save</button>
+        <button class="btn btn-default pull-right">Cancel</button>
+    </div>
+</div>
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="./js/jquery-1.11.2.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="./js/bootstrap.min.js"></script>
+
+<script>
+    function update() {
+        if (!propertiesHolder) return;
+
+        $('.entry').remove();
+
+        var props = propertiesHolder.properties();
+        for (var i = 0; i < props.length; ++i) {
+            var entry = $('#template').clone();
+
+            entry.appendTo('body');
+            entry.attr('pvalue', props[i].value);
+            entry.attr('pdefaultValue', props[i].defaultValue);
+
+            entry.css({'display': 'block'});
+            entry.addClass("entry");
+            entry.attr('id', 'entry' + i);
+
+            entry.find('.property').text(props[i].name);
+            entry.find('.description').text(props[i].description);
+            entry.find('.value')
+                .val(props[i].value)
+                .on('keyup', function () {
+                    var parent = $(this).parents('.panel');
+
+                    if ($(this).val() !== parent.attr('pvalue')) {
+                        parent.addClass('modified');
+                    } else {
+                        parent.removeClass('modified');
+                    }
+                });
+
+            entry.find('.default')
+                    .click(function () {
+                        var parent = $(this).parents('.panel');
+                        parent.find('.value').val(parent.attr('pdefaultValue')).trigger('keyup');
+                    });
+            entry.find('.revert')
+                    .click(function () {
+                        var parent = $(this).parents('.panel');
+                        parent.find('.value').val(parent.attr('pvalue')).trigger('keyup');
+                    });
+
+
+
+        }
+    }
+
+    $(document).ready(function () {
+//        update();
+    });
+</script>
+</body>
+</html>
