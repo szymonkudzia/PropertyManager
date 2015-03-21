@@ -10,9 +10,12 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import netscape.javascript.JSObject;
 
@@ -30,7 +33,7 @@ public class Main extends Application {
     @Override
     public void start(final Stage primaryStage) throws Exception{
         VBox vBox = new VBox();
-        Scene scene = new Scene(vBox, 800, 600);
+        Scene scene = new Scene(vBox);
         scene.getStylesheets().addAll(this.getClass().getResource("/view/css/javafx.css").toExternalForm());
         MenuBar menuBar = new MenuBar();
 
@@ -38,27 +41,49 @@ public class Main extends Application {
         openDirectory.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
         openDirectory.setOnAction(openDirectoryEvent(primaryStage));
 
+        MenuItem openFile = new MenuItem("Open file");
+        openFile.setAccelerator(new KeyCodeCombination(KeyCode.P, KeyCombination.CONTROL_DOWN));
+        openFile.setOnAction(openFileEvent(primaryStage));
+
         // --- Menu File
         Menu menuFile = new Menu("File");
-        menuFile.getItems().addAll(openDirectory);
+        menuFile.getItems().addAll(openDirectory, openFile);
 
         menuBar.getMenus().addAll(menuFile);
 
 
 
 
-        webView.getEngine().load(this.getClass().getResource("/view/index.html").toExternalForm());
 
+        webView.getEngine().load(this.getClass().getResource("/view/index.html").toExternalForm());
+        bindToJs("propertySaver", new PropertySaver(primaryStage));
 
 
         vBox.getChildren().addAll(menuBar, webView);
-
+        VBox.setVgrow(webView, Priority.ALWAYS);
 
         primaryStage.setTitle("Property Manager");
         primaryStage.setScene(scene);
         primaryStage.show();
 
+    }
 
+    private EventHandler<ActionEvent> openFileEvent(final Stage primaryStage) {
+        return new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.getExtensionFilters()
+                        .addAll(
+                                new FileChooser.ExtensionFilter("Property file", "*.properties"),
+                                new FileChooser.ExtensionFilter("All files", "*.*"));
+
+                File file = fileChooser.showOpenDialog(primaryStage);
+                if (file == null) return;
+
+                reloadProperties(file);
+            }
+        };
     }
 
     private EventHandler<ActionEvent> openDirectoryEvent(final Stage primaryStage) {
@@ -71,24 +96,29 @@ public class Main extends Application {
                 File directory = directoryChooser.showDialog(primaryStage);
                 if (directory == null) return;
 
-                List<File> propertyFiles = propertyFilesFinder.find(directory);
-                List<Property> properties = propertiesExtractor.extract(propertyFiles);
-
-                propertiesHolder.clear();
-                propertiesHolder.addAll(properties);
-
-//                webView.getEngine().reload();
-                JSObject window = (JSObject) webView.getEngine().executeScript("window");
-                window.setMember("propertiesHolder", propertiesHolder);
-                String r = (String) webView.getEngine().executeScript("update()");
-                System.out.println(r);
-
+                reloadProperties(directory);
             }
         };
     }
 
 
 
+    private void reloadProperties(File source) {
+        List<File> propertyFiles = propertyFilesFinder.find(source);
+        List<Property> properties = propertiesExtractor.extract(propertyFiles);
+
+        propertiesHolder.clear();
+        propertiesHolder.addAll(properties);
+
+        bindToJs("propertiesHolder", propertiesHolder);
+        webView.getEngine().executeScript("update()");
+
+    }
+
+    private void bindToJs(String name, Object object) {
+        JSObject window = (JSObject) webView.getEngine().executeScript("window");
+        window.setMember(name, object);
+    }
 
 
     public static void main(String[] args) {

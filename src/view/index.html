@@ -35,15 +35,15 @@
             </table>
         </div>
         <div class="panel-body">
-            <p class="description">Some description</p>
+            <p class="description" contenteditable="true">Some description</p>
         </div>
     </div>
 
 
 
     <div class="footer">
-        <button class="btn btn-primary pull-right">Save</button>
-        <button class="btn btn-default pull-right">Cancel</button>
+        <button id="save" class="btn btn-primary btn-danger pull-right">Save as</button>
+        <button class="btn btn-default pull-right">Undo all changes</button>
     </div>
 </div>
 
@@ -78,9 +78,9 @@
                     var parent = $(this).parents('.panel');
 
                     if ($(this).val() !== parent.attr('pvalue')) {
-                        parent.addClass('modified');
+                        markAsModified(parent);
                     } else {
-                        parent.removeClass('modified');
+                        markAsNotModified(parent);
                     }
                 });
 
@@ -94,14 +94,32 @@
                         var parent = $(this).parents('.panel');
                         parent.find('.value').val(parent.attr('pvalue')).trigger('keyup');
                     });
-
-
-
         }
     }
 
+
+    function markAsModified(el) {
+        el.addClass('modified');
+    }
+
+    function markAsNotModified(el) {
+        el.removeClass('modified');
+    }
+
+
     $(document).ready(function () {
-//        update();
+        $('#save').unbind('click').bind('click', function () {
+            $('.entry').each(function () {
+                var name = $(this).find('.property').text();
+                var value = $(this).find('.value').val();
+                var defaultValue = $(this).attr('pdefaultValue');
+                var description = $(this).find('.description').text();
+
+                propertySaver.add(name, value, defaultValue, description);
+            });
+
+            propertySaver.save();
+        });
     });
 </script>
 </body>
