@@ -1,13 +1,13 @@
 <component name="ArtifactManager">
-  <artifact type="javafx" build-on-make="true" name="JavaFXApp">
-    <output-path>$PROJECT_DIR$/out/artifacts/JavaFXApp</output-path>
+  <artifact type="javafx" build-on-make="true" name="PropertyManager">
+    <output-path>$PROJECT_DIR$/out/artifacts/PropertyManager</output-path>
     <properties id="javafx-properties">
       <options>
         <option name="appClass" value="com.sk.property_manager.Main" />
         <option name="description" value="" />
         <option name="height" value="600" />
         <option name="htmlParamFile" value="" />
-        <option name="nativeBundle" value="exe" />
+        <option name="nativeBundle" value="all" />
         <option name="paramFile" value="" />
         <option name="title" value="Property Manager" />
         <option name="vendor" value="" />
@@ -15,9 +15,10 @@
       </options>
     </properties>
     <root id="root">
-      <element id="archive" name="JavaFXApp.jar">
+      <element id="archive" name="PropertyManager.jar">
         <element id="module-output" name="PropertyManager" />
       </element>
+      <element id="library" level="project" name="org.apache.commons:commons-lang3:3.3.2" />
     </root>
   </artifact>
 </component>
