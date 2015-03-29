@@ -10,7 +10,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
@@ -20,6 +19,8 @@ import javafx.stage.Stage;
 import netscape.javascript.JSObject;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Main extends Application {
@@ -31,7 +32,7 @@ public class Main extends Application {
     private PropertiesHolder propertiesHolder = new PropertiesHolder();
 
     @Override
-    public void start(final Stage primaryStage) throws Exception{
+    public void start(final Stage primaryStage) throws Exception {
         VBox vBox = new VBox();
         Scene scene = new Scene(vBox);
         scene.getStylesheets().addAll(this.getClass().getResource("/view/css/javafx.css").toExternalForm());
@@ -45,14 +46,12 @@ public class Main extends Application {
         openFile.setAccelerator(new KeyCodeCombination(KeyCode.P, KeyCombination.CONTROL_DOWN));
         openFile.setOnAction(openFileEvent(primaryStage));
 
+
         // --- Menu File
         Menu menuFile = new Menu("File");
         menuFile.getItems().addAll(openDirectory, openFile);
 
         menuBar.getMenus().addAll(menuFile);
-
-
-
 
 
         webView.getEngine().load(this.getClass().getResource("/view/index.html").toExternalForm());
@@ -75,13 +74,23 @@ public class Main extends Application {
                 FileChooser fileChooser = new FileChooser();
                 fileChooser.getExtensionFilters()
                         .addAll(
-                                new FileChooser.ExtensionFilter("Property file", "*.properties"),
-                                new FileChooser.ExtensionFilter("All files", "*.*"));
+                            new FileChooser.ExtensionFilter("All supported file types", "*.properties", "*.war", "*.jar", "*.zip", "*.txt"),
+                            new FileChooser.ExtensionFilter("Property file", "*.properties"),
+                            new FileChooser.ExtensionFilter("WAR file", "*.war"),
+                            new FileChooser.ExtensionFilter("JAR file", "*.jar")
+                        );
 
                 File file = fileChooser.showOpenDialog(primaryStage);
                 if (file == null) return;
 
-                reloadProperties(file);
+                try {
+                    List<File> files = new ArrayList<File>();
+                    files.add(file);
+
+                    reloadProperties(files);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         };
     }
@@ -90,21 +99,24 @@ public class Main extends Application {
         return new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                DirectoryChooser directoryChooser =new DirectoryChooser();
+                DirectoryChooser directoryChooser = new DirectoryChooser();
                 directoryChooser.setTitle("Choose directory");
 
                 File directory = directoryChooser.showDialog(primaryStage);
                 if (directory == null) return;
 
-                reloadProperties(directory);
+                try {
+                    List<File> propertyFiles = propertyFilesFinder.find(directory);
+                    reloadProperties(propertyFiles);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         };
     }
 
 
-
-    private void reloadProperties(File source) {
-        List<File> propertyFiles = propertyFilesFinder.find(source);
+    private void reloadProperties(List<File> propertyFiles) throws IOException {
         List<Property> properties = propertiesExtractor.extract(propertyFiles);
 
         propertiesHolder.clear();
